@@ -1,0 +1,649 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.navbar {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.alert {
+    padding: 12px 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+}
+
+.btn-logout {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-small:hover {
+    background: #2980b9;
+}
+
+.btn-danger {
+    background: #e74c3c;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.login-box h2 {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.test-accounts {
+    margin-top: 30px;
+    padding: 15px;
+    background: #ecf0f1;
+    border-radius: 4px;
+}
+
+.test-accounts h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.test-accounts p {
+    font-size: 12px;
+    margin: 5px 0;
+    color: #666;
+}
+
+.dashboard h1 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.trucks-section, .alerts-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.trucks-section h2, .alerts-section h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.trucks-list {
+    display: grid;
+    gap: 15px;
+}
+
+.truck-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s;
+}
+
+.truck-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.truck-icon {
+    font-size: 3rem;
+    margin-right: 20px;
+}
+
+.truck-info h3 {
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.truck-info p {
+    color: #7f8c8d;
+    font-size: 14px;
+    margin: 2px 0;
+}
+
+.truck-info .license {
+    font-weight: 600;
+}
+
+.status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.alert-item {
+    padding: 15px;
+    border-left: 4px solid;
+    border-radius: 4px;
+    background: white;
+}
+
+.severity-high {
+    border-left-color: #e74c3c;
+    background: #fef5f5;
+}
+
+.severity-medium {
+    border-left-color: #f39c12;
+    background: #fef9f5;
+}
+
+.severity-low {
+    border-left-color: #3498db;
+    background: #f5f9fe;
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.alert-type {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.alert-truck {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.alert-message {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.alert-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.truck-detail h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.license-plate {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+.truck-features {
+    display: grid;
+    gap: 20px;
+}
+
+.feature-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.feature-section h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.camera-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.camera-feed {
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.camera-feed:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.camera-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.status-live {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.face-detection-container {
+    display: grid;
+    gap: 15px;
+}
+
+.face-detection-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.face-image {
+    font-size: 3rem;
+    margin-right: 20px;
+}
+
+.face-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.match-matched {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.match-no-match {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.timestamp {
+    color: #999;
+    font-size: 12px;
+}
+
+.map-container {
+    margin-top: 15px;
+}
+
+.location-coords {
+    margin-top: 10px;
+    font-family: monospace;
+    color: #555;
+}
+
+.location-time {
+    color: #999;
+    font-size: 14px;
+}
+
+.drivers-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.driver-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.driver-photo {
+    font-size: 3rem;
+    margin-right: 20px;
+}
+
+.driver-info {
+    flex: 1;
+}
+
+.driver-info h3 {
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.driver-info p {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 2px 0;
+}
+
+.driver-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.driver-form {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.driver-form h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.recording-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.recordings-list h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.recording-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.recording-icon {
+    font-size: 2.5rem;
+    margin-right: 20px;
+}
+
+.recording-info {
+    flex: 1;
+}
+
+.recording-info p {
+    margin: 3px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.recording-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 90%;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.live-feed-container {
+    margin-top: 20px;
+}
+
+.simulated-feed {
+    text-align: center;
+}
+
+.feed-placeholder {
+    background: #2c3e50;
+    color: white;
+    padding: 100px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.feed-placeholder p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.gps-section button {
+    margin-bottom: 15px;
+}

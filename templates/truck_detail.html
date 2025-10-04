@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}{{ truck.truck_number }} - Truck Monitoring Management{% endblock %}
+
+{% block content %}
+<div class="truck-detail">
+    <div class="breadcrumb">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a> / {{ truck.truck_number }}
+    </div>
+    
+    <h1>{{ truck.truck_number }} - {{ truck.model }}</h1>
+    <p class="license-plate">License Plate: {{ truck.license_plate }}</p>
+
+    <div class="truck-features">
+        <div class="feature-section">
+            <h2>Camera Feeds</h2>
+            <div class="camera-grid">
+                <div class="camera-feed" onclick="showCameraFeed({{ truck.id }}, 1)">
+                    <div class="camera-icon">📹</div>
+                    <p>Camera 1 - Front</p>
+                    <span class="status-live">Live</span>
+                </div>
+                <div class="camera-feed" onclick="showCameraFeed({{ truck.id }}, 2)">
+                    <div class="camera-icon">📹</div>
+                    <p>Camera 2 - Cabin</p>
+                    <span class="status-live">Live</span>
+                </div>
+                <div class="camera-feed" onclick="showCameraFeed({{ truck.id }}, 3)">
+                    <div class="camera-icon">📹</div>
+                    <p>Camera 3 - Rear</p>
+                    <span class="status-live">Live</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>Face Detection</h2>
+            <div class="face-detection-container">
+                {% if face_detections %}
+                    {% for detection in face_detections[:3] %}
+                    <div class="face-detection-card">
+                        <div class="face-image">👤</div>
+                        <div class="face-info">
+                            <p><strong>Driver:</strong> {{ detection.driver_name or 'Unknown' }}</p>
+                            <p><strong>Confidence:</strong> {{ detection.confidence }}%</p>
+                            <p><strong>Result:</strong> 
+                                <span class="match-{{ detection.match_result.lower().replace(' ', '-') }}">
+                                    {{ detection.match_result }}
+                                </span>
+                            </p>
+                            <p class="timestamp">{{ detection.detected_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No face detection data available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>GPS Location</h2>
+            {% if current_location %}
+            <div class="gps-section">
+                <button onclick="showGPSLocation()" class="btn btn-primary">View Live Location</button>
+                <div id="gps-map" class="map-container" style="display:none;">
+                    <div id="map" style="height: 400px; width: 100%;"></div>
+                </div>
+                <p class="location-coords">
+                    Lat: {{ current_location.latitude }}, Lon: {{ current_location.longitude }}
+                </p>
+                <p class="location-time">Last updated: {{ current_location.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+            {% else %}
+            <p class="no-data">No GPS data available</p>
+            {% endif %}
+        </div>
+
+        <div class="feature-section">
+            <h2>Travel History</h2>
+            {% if travel_history %}
+            <button onclick="showTravelHistory()" class="btn btn-primary">View Travel Path</button>
+            <div id="travel-history-map" class="map-container" style="display:none;">
+                <div id="history-map" style="height: 400px; width: 100%;"></div>
+            </div>
+            {% else %}
+            <p class="no-data">No travel history available</p>
+            {% endif %}
+        </div>
+
+        <div class="feature-section">
+            <h2>Drivers</h2>
+            <button onclick="showAddDriverForm()" class="btn btn-secondary">Add Driver</button>
+            
+            <div id="add-driver-form" style="display:none;" class="driver-form">
+                <h3>Add New Driver</h3>
+                <form method="POST" action="{{ url_for('add_driver', truck_id=truck.id) }}">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>License Number</label>
+                        <input type="text" name="license_number">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Driver</button>
+                    <button type="button" onclick="hideAddDriverForm()" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+
+            <div class="drivers-list">
+                {% for driver in drivers %}
+                <div class="driver-card">
+                    <div class="driver-photo">👤</div>
+                    <div class="driver-info">
+                        <h3>{{ driver.name }}</h3>
+                        <p>Phone: {{ driver.phone or 'N/A' }}</p>
+                        <p>License: {{ driver.license_number or 'N/A' }}</p>
+                    </div>
+                    <div class="driver-actions">
+                        <button onclick="editDriver({{ driver.id }}, '{{ driver.name }}', '{{ driver.phone }}', '{{ driver.license_number }}')" class="btn-small">Edit</button>
+                        <form method="POST" action="{{ url_for('delete_driver', truck_id=truck.id, driver_id=driver.id) }}" style="display:inline;">
+                            <button type="submit" class="btn-small btn-danger" onclick="return confirm('Delete this driver?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="edit-driver-form" style="display:none;" class="driver-form">
+                <h3>Edit Driver</h3>
+                <form id="edit-form" method="POST">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" id="edit-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" id="edit-phone">
+                    </div>
+                    <div class="form-group">
+                        <label>License Number</label>
+                        <input type="text" name="license_number" id="edit-license">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Driver</button>
+                    <button type="button" onclick="hideEditDriverForm()" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>Video Recordings</h2>
+            <div class="recording-controls">
+                <button onclick="startRecording({{ truck.id }}, 1)" class="btn btn-success">Start Recording Cam 1</button>
+                <button onclick="startRecording({{ truck.id }}, 2)" class="btn btn-success">Start Recording Cam 2</button>
+                <button onclick="startRecording({{ truck.id }}, 3)" class="btn btn-success">Start Recording Cam 3</button>
+            </div>
+            
+            <div class="recordings-list">
+                <h3>Past Recordings</h3>
+                {% if recordings %}
+                    {% for recording in recordings %}
+                    <div class="recording-card">
+                        <div class="recording-icon">🎥</div>
+                        <div class="recording-info">
+                            <p><strong>Camera {{ recording.camera_number }}</strong></p>
+                            {% if recording.status == 'recording' %}
+                                <p><span style="color: red;">⏺ Recording in progress...</span></p>
+                                <p class="timestamp">Started: {{ recording.recorded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            {% else %}
+                                <p>Size: {{ ((recording.file_size or 0) / 1024 / 1024) | round(2) }} MB</p>
+                                <p>Duration: {{ ((recording.duration or 0) / 60) | round(0) }} minutes</p>
+                                <p class="timestamp">{{ recording.recorded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="recording-actions">
+                            {% if recording.status == 'recording' %}
+                                <button class="btn-small btn-success" onclick="stopRecording({{ truck.id }}, {{ recording.id }})">Stop</button>
+                            {% else %}
+                                <button class="btn-small">Download</button>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('delete_recording', truck_id=truck.id, recording_id=recording.id) }}" style="display:inline;">
+                                <button type="submit" class="btn-small btn-danger" onclick="return confirm('Delete this recording?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No recordings available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="camera-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h2>Live Camera Feed</h2>
+        <div class="live-feed-container">
+            <div class="simulated-feed">
+                <p>📹 Live Feed - Camera <span id="camera-number"></span> - Truck: {{ truck.truck_number }}</p>
+                <div id="feed-status" style="text-align: center; padding: 20px;">
+                    <p>Loading camera feed...</p>
+                </div>
+                <video id="camera-video" style="width: 100%; max-height: 500px; background: #000; display: none;" controls>
+                    <p>Your browser does not support the video tag.</p>
+                </video>
+                <div id="feed-placeholder" class="feed-placeholder" style="display: none;">
+                    <p>Simulated Live Video Stream</p>
+                    <p>Camera feed simulation active</p>
+                    <p style="font-size: 12px; margin-top: 10px;">Note: In production, this would display real-time video from the truck camera</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let gpsMap = null;
+let historyMap = null;
+
+function showCameraFeed(truckId, cameraNumber) {
+    document.getElementById('camera-number').textContent = cameraNumber;
+    document.getElementById('camera-modal').style.display = 'flex';
+    
+    const feedStatus = document.getElementById('feed-status');
+    const cameraVideo = document.getElementById('camera-video');
+    const feedPlaceholder = document.getElementById('feed-placeholder');
+    
+    feedStatus.style.display = 'block';
+    cameraVideo.style.display = 'none';
+    feedPlaceholder.style.display = 'none';
+    
+    fetch('/truck/' + truckId + '/camera/' + cameraNumber + '/feed')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load camera feed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            feedStatus.style.display = 'none';
+            
+            if (data.stream_url && data.stream_url.endsWith('.mp4')) {
+                cameraVideo.src = data.stream_url;
+                cameraVideo.style.display = 'block';
+                cameraVideo.onerror = function() {
+                    cameraVideo.style.display = 'none';
+                    feedPlaceholder.style.display = 'block';
+                };
+            } else {
+                feedPlaceholder.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading camera feed:', error);
+            feedStatus.innerHTML = '<p style="color: red;">Error loading camera feed. Please try again.</p>';
+        });
+}
+
+function closeModal() {
+    document.getElementById('camera-modal').style.display = 'none';
+}
+
+function showGPSLocation() {
+    const mapDiv = document.getElementById('gps-map');
+    mapDiv.style.display = 'block';
+    
+    if (!gpsMap) {
+        {% if current_location %}
+        gpsMap = L.map('map').setView([{{ current_location.latitude }}, {{ current_location.longitude }}], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(gpsMap);
+        L.marker([{{ current_location.latitude }}, {{ current_location.longitude }}])
+            .addTo(gpsMap)
+            .bindPopup('{{ truck.truck_number }}')
+            .openPopup();
+        {% endif %}
+    }
+}
+
+function showTravelHistory() {
+    const mapDiv = document.getElementById('travel-history-map');
+    mapDiv.style.display = 'block';
+    
+    if (!historyMap) {
+        {% if travel_history %}
+        const locations = [
+            {% for loc in travel_history %}
+            [{{ loc.latitude }}, {{ loc.longitude }}]{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        historyMap = L.map('history-map').setView(locations[0], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(historyMap);
+        
+        L.polyline(locations, {color: 'blue'}).addTo(historyMap);
+        
+        locations.forEach((loc, idx) => {
+            L.circleMarker(loc, {radius: 5, color: 'red'}).addTo(historyMap);
+        });
+        {% endif %}
+    }
+}
+
+function showAddDriverForm() {
+    document.getElementById('add-driver-form').style.display = 'block';
+}
+
+function hideAddDriverForm() {
+    document.getElementById('add-driver-form').style.display = 'none';
+}
+
+function editDriver(driverId, name, phone, license) {
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-phone').value = phone;
+    document.getElementById('edit-license').value = license;
+    document.getElementById('edit-form').action = '/truck/{{ truck.id }}/driver/' + driverId + '/edit';
+    document.getElementById('edit-driver-form').style.display = 'block';
+}
+
+function hideEditDriverForm() {
+    document.getElementById('edit-driver-form').style.display = 'none';
+}
+
+function startRecording(truckId, cameraNumber) {
+    fetch('/truck/' + truckId + '/recording/start', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'camera_number=' + cameraNumber
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Recording started on Camera ' + cameraNumber);
+        location.reload();
+    })
+    .catch(error => {
+        alert('Error starting recording: ' + error);
+    });
+}
+
+function stopRecording(truckId, recordingId) {
+    if (!confirm('Stop this recording?')) {
+        return;
+    }
+    
+    fetch('/truck/' + truckId + '/recording/' + recordingId + '/stop', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Recording stopped and saved');
+        location.reload();
+    })
+    .catch(error => {
+        alert('Error stopping recording: ' + error);
+    });
+}
+</script>
+{% endblock %}
